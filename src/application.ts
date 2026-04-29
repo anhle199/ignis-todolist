@@ -8,6 +8,7 @@ import {
 } from '@venizia/ignis';
 import { Environment } from '@venizia/ignis-helpers';
 import packageJson from '../package.json';
+import { PingController } from './controllers';
 
 // Define application configurations
 export const appConfigs: IApplicationConfigs = {
@@ -68,7 +69,7 @@ export class Application extends BaseApplication {
     // this.component(AuthComponent);
 
     // Register our controller
-    // this.controller(ControllerClass);
+    this.controller(PingController);
   }
 
   // Hook 4: Do cleanup or extra work after everything is set up
