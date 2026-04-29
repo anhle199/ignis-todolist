@@ -1,12 +1,46 @@
 {
   "name": "ignis-todolist",
-  "module": "index.ts",
-  "type": "module",
+  "version": "0.0.1",
+  "description": "Ignis todolist tutorial",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
+  "scripts": {
+    "lint": "bun run eslint && bun run prettier:cli",
+    "lint:fix": "bun run eslint --fix && bun run prettier:fix",
+    "prettier:cli": "prettier \"**/*.{js,ts}\" -l",
+    "prettier:fix": "bun run prettier:cli --write",
+    "eslint": "eslint --report-unused-disable-directives .",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
+    "clean": "sh ./scripts/clean.sh",
+    "rebuild": "bun run clean && bun run build",
+    "server:dev": "NODE_ENV=development bun .",
+    "server:prod": "NODE_ENV=production bun .",
+    "server:local": "NODE_ENV=local bun .",
+    "start:local": "bun run build && bun run server:local",
+    "orm:migrate": "drizzle-kit migrate --config=src/migration.ts",
+    "orm:migrate:local": "NODE_ENV=local bun --env-file=.env.local run orm:migrate",
+    "orm:generate": "bun run build && drizzle-kit generate --config=src/migration.ts",
+    "orm:generate:local": "NODE_ENV=local bun --env-file=.env.local run orm:generate"
   },
-  "peerDependencies": {
-    "typescript": "^5"
+  "devDependencies": {
+    "@types/bun": "^1.3.13",
+    "@types/pg": "^8.20.0",
+    "@venizia/dev-configs": "0.0.6",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^10.2.1",
+    "prettier": "^3.8.3",
+    "tsc-alias": "^1.8.16",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "^1.3.0",
+    "@scalar/hono-api-reference": "^0.10.11",
+    "@venizia/ignis": "0.0.8-12",
+    "@venizia/ignis-helpers": "0.0.8-8",
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3",
+    "hono": "^4.12.15",
+    "pg": "^8.20.0"
   }
 }
