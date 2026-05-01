@@ -8,7 +8,10 @@ import {
 } from '@venizia/ignis';
 import { Environment } from '@venizia/ignis-helpers';
 import packageJson from '../package.json';
-import { PingController } from './controllers';
+import { PingController, TodoItemController, TodolistController } from './controllers';
+import { PostgresDataSource } from './datasources';
+import { TodoItemRepository, TodolistRepository } from './repositories';
+import { TodoItemService, TodolistService } from './services';
 
 // Define application configurations
 export const appConfigs: IApplicationConfigs = {
@@ -58,18 +61,19 @@ export class Application extends BaseApplication {
 
   // Hook 3: Register your resources (THIS IS THE MOST IMPORTANT ONE)
   preConfigure(): ValueOrPromise<void> {
-    // Register SwaggerComponent for API documentation at /doc/explorer
     this.component(SwaggerComponent);
 
-    // As your app grows, you'll add:
-    // this.dataSource(DataSourceClass);
-    // this.repository(RepositoryClass);
+    this.dataSource(PostgresDataSource);
 
-    // this.service(UserService);
-    // this.component(AuthComponent);
+    this.repository(TodolistRepository);
+    this.repository(TodoItemRepository);
 
-    // Register our controller
+    this.service(TodolistService);
+    this.service(TodoItemService);
+
     this.controller(PingController);
+    this.controller(TodolistController);
+    this.controller(TodoItemController);
   }
 
   // Hook 4: Do cleanup or extra work after everything is set up

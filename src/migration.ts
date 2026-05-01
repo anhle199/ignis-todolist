@@ -17,7 +17,7 @@ logger.info(JSON.stringify(databaseConfigs));
 export default defineConfig({
   out: './drizzle',
   dialect: 'postgresql',
-  schema: './src/models/schemas/schema.ts',
+  schema: './src/models/schemas/schemas.ts',
   dbCredentials: databaseConfigs,
   schemaFilter: 'public',
   migrations: {

@@ -30,7 +30,7 @@ export class PostgresDataSource extends BaseDataSource<IPostgresDataSourceSettin
     });
   }
 
-  // --------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   override configure(): ValueOrPromise<void> {
     const logger = this.logger.for(this.configure.name);
     // getSchema() auto-discovers models from @repository bindings
@@ -47,7 +47,7 @@ export class PostgresDataSource extends BaseDataSource<IPostgresDataSourceSettin
     this.connector = drizzle({ client: this.pool, schema, logger: queryLogger });
   }
 
-  // --------------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   override getConnectionString(): ValueOrPromise<string> {
     const { host, port, database, user, password, useSSL } = this.settings;
     return `postgresql://${user}:${password}@${host}:${port}/${database}?sslmode=${
