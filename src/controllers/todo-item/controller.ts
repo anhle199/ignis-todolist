@@ -26,7 +26,7 @@ export class TodoItemController extends BaseRestController {
         key: TodoItemService.name,
       }),
     })
-    private _todoItemService: TodoItemService,
+    private _service: TodoItemService,
   ) {
     super({ scope: TodoItemController.name });
   }
@@ -43,7 +43,7 @@ export class TodoItemController extends BaseRestController {
     data.todolistId = todolistId;
     logger.info(`reassign requestBody.todolistId = ${todolistId} (from request param)`);
 
-    const result = await this._todoItemService.createTodoItem({ data });
+    const result = await this._service.createTodoItem({ data });
 
     return context.json(result, HTTP.ResultCodes.RS_2.Created);
   }
@@ -53,7 +53,7 @@ export class TodoItemController extends BaseRestController {
     const { todolistId, todoItemId } = context.req.valid<TSingleTodoItemRequestParam>('param');
     const data = context.req.valid<TCreateTodoItemRequest>('json');
 
-    const result = await this._todoItemService.updateTodoItemById({
+    const result = await this._service.updateTodoItemById({
       data,
       todolistId,
       todoItemId,
@@ -66,7 +66,7 @@ export class TodoItemController extends BaseRestController {
   async deleteTodoItemById(context: TRouteContext) {
     const { todolistId, todoItemId } = context.req.valid<TSingleTodoItemRequestParam>('param');
 
-    await this._todoItemService.deleteBatchTodoItems({
+    await this._service.deleteBatchTodoItems({
       todolistId,
       todoItemIds: [todoItemId],
     });
@@ -79,7 +79,7 @@ export class TodoItemController extends BaseRestController {
     const { todolistId } = context.req.valid<TBaseTodoItemRequestParam>('param');
     const data = context.req.valid<TDeleteBatchTodoItemsRequest>('json');
 
-    await this._todoItemService.deleteBatchTodoItems({
+    await this._service.deleteBatchTodoItems({
       todolistId,
       todoItemIds: data.ids,
     });

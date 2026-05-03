@@ -1,46 +1,27 @@
-import { Todolist, TTodolist } from '@/models';
+import {
+  TTodolist,
+  type TCreateTodolistRequest,
+  type TDefaultFindFilterExcludingWhereQuery,
+  type TDefaultFindFilterQuery,
+  type TSingleTodolistRequestParam,
+} from '@/models';
 import { TodolistRepository } from '@/repositories';
 import { TodolistService } from '@/services';
-import { z } from '@hono/zod-openapi';
 import {
+  api,
+  BaseRestController,
   BindingKeys,
   BindingNamespaces,
   controller,
-  ControllerFactory,
   inject,
   TWhere,
   type TRouteContext,
 } from '@venizia/ignis';
-import { HTTP } from '@venizia/ignis-helpers';
-import { BASE_PATH } from './definitions';
-
-const _TodolistController = ControllerFactory.defineCrudController({
-  repository: { name: TodolistRepository.name },
-  controller: {
-    name: 'MerchantController',
-    basePath: '/merchants',
-    isStrict: { path: true, requestSchema: true },
-  },
-  entity: () => Todolist, // Provide a resolver for your entity class
-  routes: {
-    // deleteById: {
-    //   // request: {
-    //   //   params: BaseTodolistRequestParamSchema,
-    //   // },
-    //   response: {
-    //     schema: z.object({ message: z.string() }),
-    //   },
-    // },
-    deleteBy: {
-      response: {
-        schema: z.object({ message: z.string() }),
-      },
-    },
-  },
-});
+import { HTTP, toBoolean } from '@venizia/ignis-helpers';
+import { BASE_PATH, RouteConfigs } from './definitions';
 
 @controller({ path: BASE_PATH })
-export class TodolistController extends _TodolistController {
+export class TodolistController extends BaseRestController {
   constructor(
     @inject({
       key: BindingKeys.build({
@@ -48,7 +29,7 @@ export class TodolistController extends _TodolistController {
         key: TodolistRepository.name,
       }),
     })
-    repository: TodolistRepository,
+    private _repository: TodolistRepository,
 
     @inject({
       key: BindingKeys.build({
@@ -56,33 +37,55 @@ export class TodolistController extends _TodolistController {
         key: TodolistService.name,
       }),
     })
-    private readonly _service: TodolistService,
+    private _service: TodolistService,
   ) {
-    super(repository);
+    super({ scope: TodolistController.name });
   }
 
-  // override async create(opts: { context: TRouteContext }) {
-  //   const logger = this.logger.for(this.create.name);
-  //   logger.info('override create method');
+  override binding() {}
 
-  //   const { context } = opts;
+  @api({ configs: RouteConfigs.FIND })
+  async findTodolists(context: TRouteContext) {
+    const { filter } = context.req.valid<TDefaultFindFilterQuery<TTodolist>>('query');
+    const withCounting = toBoolean(context.req.header(HTTP.Headers.REQUEST_COUNT_DATA) ?? 'true');
+    const result = await this._service.findTodolists({ filter, withCounting });
 
-  //   const body = context.req.valid<TCreateMerchantRequest>('json');
-  //   const result = await this._service.createMerchant({ data: body });
+    const respData = withCounting ? result : result.data;
+    return context.json(respData, HTTP.ResultCodes.RS_2.Created);
+  }
 
-  //   return context.json(result, HTTP.ResultCodes.RS_2.Created);
-  // }
+  @api({ configs: RouteConfigs.FIND_BY_ID })
+  async findTodolistById(context: TRouteContext) {
+    const { id } = context.req.valid<TSingleTodolistRequestParam>('param');
+    const { filter } = context.req.valid<TDefaultFindFilterExcludingWhereQuery<TTodolist>>('query');
+    const result = await this._repository.findById({ id, filter });
+    return context.json(result, HTTP.ResultCodes.RS_2.Created);
+  }
 
-  // override async deleteById(opts: { context: TRouteContext }) {
-  //   const { context } = opts;
-  //   const { id } = context.req.valid<TBaseTodolistRequestParam>('param');
+  @api({ configs: RouteConfigs.CREATE })
+  async createTodoItem(context: TRouteContext) {
+    const data = context.req.valid<TCreateTodolistRequest>('json');
+    const result = await this._service.createTodolist({ data });
+    return context.json(result, HTTP.ResultCodes.RS_2.Created);
+  }
 
-  //   await this.repository.deleteById({ id });
+  @api({ configs: RouteConfigs.UPDATE_BY_ID })
+  async updateTodoItemById(context: TRouteContext) {
+    const { id } = context.req.valid<TSingleTodolistRequestParam>('param');
+    const data = context.req.valid<TCreateTodolistRequest>('json');
+    const result = await this._service.updateTodolistById({ id, data });
+    return context.json(result, HTTP.ResultCodes.RS_2.Ok);
+  }
 
-  //   return context.json({ message: 'success' }, HTTP.ResultCodes.RS_2.Ok);
-  // }
+  @api({ configs: RouteConfigs.DELETE_BY_ID })
+  async deleteTodoItemById(context: TRouteContext) {
+    const { id } = context.req.valid<TSingleTodolistRequestParam>('param');
+    await this._service.deleteTodolistById({ id });
+    return context.json({ message: 'success' }, HTTP.ResultCodes.RS_2.Ok);
+  }
 
-  override async deleteBy(opts: { context: TRouteContext }) {
+  @api({ configs: RouteConfigs.DELETE_BATCH })
+  async deleteBy(opts: { context: TRouteContext }) {
     const { context } = opts;
     const where = context.req.valid<TWhere<TTodolist>>('query');
 

@@ -27,11 +27,13 @@ export const CreateTodoItemRequestSchema = z.object({
 export type TCreateTodoItemRequest = z.infer<typeof CreateTodoItemRequestSchema>;
 
 // ----------------------------------------------------------------------------
-export const UpdateTodoItemRequestSchema = z.object({
-  name: z.string().trim().min(1).optional(),
-  description: z.string().trim().nullish(),
-  status: z.enum([...TodoItemStatuses.SCHEME_SET]),
-});
+export const UpdateTodoItemRequestSchema = z
+  .object({
+    name: z.string().trim().min(1),
+    description: z.string().trim().nullish(),
+    status: z.enum([...TodoItemStatuses.SCHEME_SET]),
+  })
+  .partial();
 
 export type TUpdateTodoItemRequest = z.infer<typeof UpdateTodoItemRequestSchema>;
 

@@ -12,7 +12,7 @@ export class TodoItemService extends BaseService {
         key: TodoItemRepository.name,
       }),
     })
-    private _todoItemRepository: TodoItemRepository,
+    private _repository: TodoItemRepository,
 
     @inject({
       key: BindingKeys.build({
@@ -39,7 +39,7 @@ export class TodoItemService extends BaseService {
       });
     }
 
-    const isExistedTodoItem = await this._todoItemRepository.existsWith({ where: { code } });
+    const isExistedTodoItem = await this._repository.existsWith({ where: { code } });
     if (isExistedTodoItem) {
       throw getError({
         message: `Todo item ${code} is already existed`,
@@ -47,7 +47,7 @@ export class TodoItemService extends BaseService {
       });
     }
 
-    const createdResult = await this._todoItemRepository.create({
+    const createdResult = await this._repository.create({
       data: {
         code: data.code,
         name: data.name,
@@ -77,7 +77,7 @@ export class TodoItemService extends BaseService {
       });
     }
 
-    const isExistedTodoItem = await this._todoItemRepository.existsWith({
+    const isExistedTodoItem = await this._repository.existsWith({
       where: {
         id: todoItemId,
         todolistId,
@@ -90,7 +90,7 @@ export class TodoItemService extends BaseService {
       });
     }
 
-    const updatedResult = await this._todoItemRepository.updateById({
+    const updatedResult = await this._repository.updateById({
       id: todoItemId,
       data: {
         name: data.name,
@@ -116,7 +116,7 @@ export class TodoItemService extends BaseService {
       });
     }
 
-    const { count: todoItemCount } = await this._todoItemRepository.count({
+    const { count: todoItemCount } = await this._repository.count({
       where: {
         id: {
           inq: todoItemIds,
@@ -132,7 +132,7 @@ export class TodoItemService extends BaseService {
       });
     }
 
-    const { count: deletedCount } = await this._todoItemRepository.deleteBy({
+    const { count: deletedCount } = await this._repository.deleteBy({
       where: {
         id: {
           inq: todoItemIds,

@@ -8,7 +8,12 @@ import {
 } from '@venizia/ignis';
 import { Environment } from '@venizia/ignis-helpers';
 import packageJson from '../package.json';
-import { PingController, TodoItemController, TodolistController } from './controllers';
+import {
+  PingController,
+  TodoItemController,
+  TodolistController,
+  TodolistCrudController,
+} from './controllers';
 import { PostgresDataSource } from './datasources';
 import { TodoItemRepository, TodolistRepository } from './repositories';
 import { TodoItemService, TodolistService } from './services';
@@ -74,6 +79,7 @@ export class Application extends BaseApplication {
     this.controller(PingController);
     this.controller(TodolistController);
     this.controller(TodoItemController);
+    this.controller(TodolistCrudController);
   }
 
   // Hook 4: Do cleanup or extra work after everything is set up
