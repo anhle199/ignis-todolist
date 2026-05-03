@@ -5,13 +5,12 @@ import {
   LimitSchema,
   OffsetSchema,
   OrderBySchema,
+  FilterSchema as OriginalFilterSchema,
   SkipSchema,
-  WhereSchema,
   type TFilter,
 } from '@venizia/ignis';
 
-const _FilterSchema = z.object({
-  where: WhereSchema.optional(),
+const _FilterSchemaExcludingWhere = z.object({
   fields: FieldsSchema,
   include: InclusionSchema,
   order: OrderBySchema,
@@ -20,42 +19,9 @@ const _FilterSchema = z.object({
   skip: SkipSchema,
 });
 
-/** Comprehensive Zod schema for repository query filtering. Supports object and JSON string formats. */
-export const FilterSchema = z
-  .union([
-    _FilterSchema,
-    z
-      .string()
-      .transform((val) => {
-        if (val) {
-          return JSON.parse(val);
-        }
-
-        return {};
-      })
-      .pipe(_FilterSchema),
-  ])
-  .optional()
-  .openapi({
-    type: 'object',
-    description:
-      'A comprehensive filter object for querying data, including conditions, field selection, relations, pagination, and sorting.',
-    examples: [
-      JSON.stringify({ where: { name: 'John Doe' }, limit: 10 }),
-      JSON.stringify({ fields: { id: true, name: true, email: true }, order: ['createdAt DESC'] }),
-      JSON.stringify({ include: [{ relation: 'posts', scope: { limit: 5 } }] }),
-      JSON.stringify({
-        where: { or: [{ status: 'active' }, { isPublished: true }] },
-        skip: 20,
-        limit: 10,
-      }),
-      JSON.stringify({ where: { and: [{ role: 'admin' }, { createdAt: { gte: 'YYYY-MM-DD' } }] } }),
-    ],
-  });
-
 export const FilterSchemaExcludingWhere = z
   .union([
-    _FilterSchema.omit({ where: true }),
+    _FilterSchemaExcludingWhere,
     z
       .string()
       .transform((val) => {
@@ -65,7 +31,7 @@ export const FilterSchemaExcludingWhere = z
 
         return {};
       })
-      .pipe(_FilterSchema),
+      .pipe(_FilterSchemaExcludingWhere),
   ])
   .optional()
   .openapi({
@@ -81,7 +47,7 @@ export const FilterSchemaExcludingWhere = z
   });
 
 // -----------------------------------------------------------------------------
-export const DefaultFindFilterSchemaQuery = z.object({ filter: FilterSchema }).openapi({
+export const DefaultFindFilterSchemaQuery = z.object({ filter: OriginalFilterSchema }).openapi({
   description: 'Filter with where, fields, limit, skip, order, include',
 });
 
