@@ -113,8 +113,11 @@ export class TodolistService extends BaseService {
     const logger = this.logger.for(this.deleteTodolistBy.name);
     const { where } = opts;
 
-    const todolistsWithId = await this._repository.find({
-      filter: { where, fields: ['id'] },
+    const todolistsWithId = await this._repository.find<Pick<TTodolist, 'id'>>({
+      filter: {
+        where,
+        fields: ['id'],
+      },
     });
     const todolistIds = todolistsWithId.map((todolist) => todolist.id);
 
@@ -127,9 +130,13 @@ export class TodolistService extends BaseService {
     try {
       const { count: deletedTodoItemCount } = await this._todoItemRepository.deleteBy({
         where: {
-          todolistId: { inq: todolistIds },
+          todolistId: {
+            inq: todolistIds,
+          },
         },
-        options: { transaction },
+        options: {
+          transaction,
+        },
       });
 
       if (deletedTodoItemCount > 0) {
@@ -139,8 +146,12 @@ export class TodolistService extends BaseService {
       }
 
       const { count: deletedTodolistCount } = await this._repository.deleteBy({
-        where: { id: todolistIds },
-        options: { transaction },
+        where: {
+          id: todolistIds,
+        },
+        options: {
+          transaction,
+        },
       });
       logger.info(`Deleted ${deletedTodolistCount} todolists`);
 
