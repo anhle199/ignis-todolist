@@ -12,7 +12,8 @@ import {
   type TRouteContext,
 } from '@venizia/ignis';
 import { HTTP } from '@venizia/ignis-helpers';
-import { BASE_PATH } from './definitions';
+
+const BASE_PATH = '/todolists-crud';
 
 const _TodolistCrudController = ControllerFactory.defineCrudController({
   repository: { name: TodolistRepository.name },

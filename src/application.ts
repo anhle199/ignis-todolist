@@ -8,15 +8,6 @@ import {
 } from '@venizia/ignis';
 import { Environment } from '@venizia/ignis-helpers';
 import packageJson from '../package.json';
-import {
-  PingController,
-  TodoItemController,
-  TodolistController,
-  TodolistCrudController,
-} from './controllers';
-import { PostgresDataSource } from './datasources';
-import { TodoItemRepository, TodolistRepository } from './repositories';
-import { TodoItemService, TodolistService } from './services';
 
 // Define application configurations
 export const appConfigs: IApplicationConfigs = {
@@ -29,7 +20,12 @@ export const appConfigs: IApplicationConfigs = {
   debug: {
     shouldShowRoutes: process.env.NODE_ENV !== Environment.PRODUCTION,
   },
-  bootOptions: {},
+  bootOptions: {
+    datasources: { dirs: ['datasources'] },
+    repositories: { dirs: ['repositories'] },
+    services: { dirs: ['services'] },
+    controllers: { glob: 'controllers/**/controller.{ts,js}' },
+  },
   error: { rootKey: 'error' },
 };
 
@@ -68,18 +64,18 @@ export class Application extends BaseApplication {
   preConfigure(): ValueOrPromise<void> {
     this.component(SwaggerComponent);
 
-    this.dataSource(PostgresDataSource);
+    // this.dataSource(PostgresDataSource);
 
-    this.repository(TodolistRepository);
-    this.repository(TodoItemRepository);
+    // this.repository(TodolistRepository);
+    // this.repository(TodoItemRepository);
 
-    this.service(TodolistService);
-    this.service(TodoItemService);
+    // this.service(TodolistService);
+    // this.service(TodoItemService);
 
-    this.controller(PingController);
-    this.controller(TodolistController);
-    this.controller(TodoItemController);
-    this.controller(TodolistCrudController);
+    // this.controller(PingController);
+    // this.controller(TodolistController);
+    // this.controller(TodoItemController);
+    // this.controller(TodolistCrudController);
   }
 
   // Hook 4: Do cleanup or extra work after everything is set up

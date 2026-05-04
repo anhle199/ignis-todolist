@@ -21,12 +21,16 @@ export class PingController extends BaseRestController {
   override binding() {}
 
   @api({ configs: PingRouteConfigs.ping })
-  ping(c: TRouteContext) {
+  ping(context: TRouteContext) {
+    const requestId = context.get('requestId' as any);
+    const logger = this.logger.for(`${this.ping.name}-${requestId}`);
+    logger.info('Hoang Anh neeeeeeeee');
+
     const result = {
       applicationName: applicationEnvironment.get<string>(EnvironmentKeys.APP_ENV_APPLICATION_NAME),
       message: 'Ping',
       systemTimestamp: new Date().toISOString(),
     };
-    return c.json(result, HTTP.ResultCodes.RS_2.Ok);
+    return context.json(result, HTTP.ResultCodes.RS_2.Ok);
   }
 }
